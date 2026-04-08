@@ -23,6 +23,9 @@ class QualisysCppSDKConan(ConanFile):
     def layout(self):
         cmake_layout(self, src_folder="src")
 
+    def build_requirements(self):
+        self.tool_requires("cmake/[>=3.16.0 <4]")
+
     def source(self):
         get(self, **self.conan_data["sources"][self.version], strip_root=True)
 
@@ -33,6 +36,11 @@ class QualisysCppSDKConan(ConanFile):
         replace_in_file(self, join(self.source_folder, "CMakeLists.txt"),
                         "project(qualisys_cpp_sdk)",
                         "include(GNUInstallDirs)")
+
+        replace_in_file(self, join(self.source_folder, "RTProtocol.h"),
+                        "#include <cmath>",
+                        """#include <cmath>
+                        #include <cstdint>""")
 
     def build(self):
         cmake = CMake(self)
